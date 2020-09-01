@@ -6,16 +6,19 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
+  's152tx': 'https://www.tsn.ca'
 };
 
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
+app.get('/urls/:shortURL', (req, res) => {
+  let url= req.params.shortURL;
+  let templateVars = { shortURL: req.params.shortURL, 
+                       longURL: urlDatabase[url] };
+  res.render('urls_show', templateVars);
 });
 
 app.get("/urls", (req, res) => {

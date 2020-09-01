@@ -9,8 +9,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
-
 };
+
 function generateRandomString() {
   var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var result = '';
@@ -37,7 +37,7 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);  // Log the POST request body to the console
   // res.send("Ok");         // Respond with 'Ok' (we will replace this)
   urlDatabase[generateRandomString()] = req.body.longURL;
-  res.status(200);
+  res.statusCode = 200;
 });
 
 app.get("/urls.json", (req, res) => {
@@ -52,15 +52,24 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  
+  for(const shorturl in urlDatabase){
+    if (shorturl === req.params.shortURL){
+      const longURL = urlDatabase[req.params.shortURL];
+      res.redirect(longURL);
+    } else {
+      res.statusCode = 404;
+      res.render('404');//if a client requests a non-existent shortURL
+    }
+  }
 });
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-app.get("*", (req, res) => {
 
+app.get("*", (req, res) => {
+  res.statusCode = 404;
   res.render('404');
 
 });

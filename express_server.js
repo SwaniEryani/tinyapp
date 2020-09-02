@@ -31,15 +31,21 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.status(200).render("urls_new");
 });
 
 // create new shortURL and add it to the object urlDatabase
-app.post("/urls", (req, res) => {
+app.post("/urls", (req, res) => {// i shoud add when there is no input -_-
   urlDatabase[generateRandomString()] = req.body.longURL;
-  res.send(`Short URL for ${req.body.longURL} has been created`);
-  res.statusCode = 200;
+  res.status(200).redirect("/urls");
+  //res.send(`Short URL for ${req.body.longURL} has been created`);
 });
+
+//Update
+app.post('/urls/:shortURL/update', (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.longURL
+  res.redirect('/urls');
+})
 
 // Delete 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -54,12 +60,11 @@ app.get("/urls.json", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => { 
   let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]
   };
-  
   res.render('urls_show', templateVars);
 });
 
+//redirect to the longURL
 app.get("/u/:shortURL", (req, res) => {
-
   if(urlDatabase[req.params.shortURL] === undefined){// if the shortURL is not there 
     res.status(404).render('404');
     return;

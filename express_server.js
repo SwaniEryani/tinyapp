@@ -9,12 +9,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+  "66wZ5h": "https://web.compass.lighthouselabs.ca/days/today"
 };
 
 function generateRandomString() {
   var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var result = '';
-  for ( var i = 0; i <= 6; i++ ) {
+  for ( var i = 0; i < 6; i++ ) {
       result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
   }
   return result;
@@ -33,10 +34,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// create new shortURL and add it to the object urlDatabase
 app.post("/urls", (req, res) => {
-  // console.log(req.body);  // Log the POST request body to the console
-  // res.send("Ok");         // Respond with 'Ok' (we will replace this)
   urlDatabase[generateRandomString()] = req.body.longURL;
+  res.send(`Short URL for ${req.body.longURL} has been created`);
+  res.statusCode = 200;
+});
+
+// Delete 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.body.shortURL];
+  console.log(urlDatabase);
   res.statusCode = 200;
 });
 
@@ -52,16 +60,14 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  
-  for(const shorturl in urlDatabase){
-    if (shorturl === req.params.shortURL){
-      const longURL = urlDatabase[req.params.shortURL];
-      res.redirect(longURL);
-    } else {
-      res.statusCode = 404;
-      res.render('404');//if a client requests a non-existent shortURL
-    }
+
+  if(urlDatabase[req.params.shortURL] === undefined){// if the shortURL is not there 
+    res.status(404).render('404');
+    return;
   }
+  let longURL = urlDatabase[req.params.shortURL];
+  console.log(longURL)
+  res.redirect(longURL);
 });
 
 app.get("/hello", (req, res) => {

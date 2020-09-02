@@ -43,9 +43,8 @@ app.post("/urls", (req, res) => {
 
 // Delete 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.body.shortURL];
-  console.log(urlDatabase);
-  res.statusCode = 200;
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {

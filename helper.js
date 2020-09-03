@@ -39,18 +39,33 @@ const checkPassword = function (users, userId, passowrd) {
   }
   return false;
 }
-const genrateSessionKeys = function (){
-  let tempKeys = [];
-  for(const key in users){
-    tempKeys.push(key);
+
+const searchUser = function(users, userId) {
+  return users[userId];
+};
+ function createNewUrl (db,url, userId){
+   db[generateRandomString()] = {
+    longURL : url,
+    userID : userId
+   };
+ };
+
+const urlsForUserId = function(urlDatabase, requestedUserId) {
+  let urlUser = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userId === requestedUserId) {
+      urlUser[shortURL] = urlDatabase[shortURL];
+    }
   }
-  return tempKeys;
-}
+  
+  return urlUser;
+};
 module.exports = {
   generateRandomString,
   getUserIdbyEmail,
   createUser,
-  genrateSessionKeys,
+  searchUser,
   getUserById,
-  checkPassword
+  checkPassword,
+  createNewUrl
 };

@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
 const { generateRandomString, getUserIdbyEmail, createUser ,checkPassword,createNewUrl } = require('./helper');
+const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,17 +20,17 @@ const users = {
   "CDVse2": {
     id: "CDVse2",
     email: "user@example.com",
-    password: "simplePass"
+    password: bcrypt.hashSync("simplePass",10)
   },
   "Gtlov4": {
     id: "Gtlov4",
     email: "user2@example.com",
-    password: "HardPass"
+    password: bcrypt.hashSync("HardPass",10)
   },
   "62SyXt" :{
     id : "62SyXt",
     email : "dddddd@gggggg.com",
-    password: "www"
+    password: bcrypt.hashSync("www",10)
 
   }
 }
@@ -89,7 +90,11 @@ app.post('/register', (req, res) => {
         res.status(400).send('<html><body><h3>Please choose longer password</h3></body></html>')
       } else {
         const id = generateRandomString();
-        createUser(users, { id: id, email: req.body.email, password: req.body.password });
+        createUser(users, { 
+          id: id, 
+          email: req.body.email, 
+          password: bcrypt.hashSync(req.body.password , 10)
+         });
         //users[id] = {id: id, email: req.body.email, password: req.body.password} ;
         res.cookie('id', id);
         res.redirect('/urls');
@@ -122,7 +127,7 @@ app.post('/login', (req, res) => {
   const userId = getUserIdbyEmail(users,req.body.email);
   console.log(userId);
   if (userId) {
-    if (checkPassword(users, userId, req.body.password)){
+    if (bcrypt.compareSync(req.body.password,users[userId].password)){
       res.cookie('id',userId);
       //console.log(req.body.email);
       res.redirect('/urls');

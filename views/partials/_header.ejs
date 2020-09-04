@@ -15,10 +15,10 @@
       <span style="float:right;">
         <div class="navbar-nav">
        
-        <%if(userId){%>
+        <%if(user){%>
           <form class="form-inline" action="/logout" method="POST">
             <div class="form-group mb-2">
-              Logged in as: <%=userId.email%>!
+              Logged in as: <%=user.email%>!
               <button type="logout" class="btn btn-outline-primary">logout</button>
             </div>
           </form>

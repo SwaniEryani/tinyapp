@@ -12,35 +12,40 @@
 <body>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
+    <% if(user) {%>
     <table class="table">
       <thead>
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
-          <th scope="col">by <%=cookID%>  </th>
           <th scope="col">Delete</th>
           <th scope="col">Update</th>
         </tr>
       </thead>
       <tbody>
-        <% for (let url in urls) { %>
-          <% if (urls[url].userID === cookID ){%>
+       
+          <% for (let shortURL in urls) { %>
           <tr>
-            <td><a href="/u/<%= url %>"><%= url %></a></td>
-            <td><%= urls[url].longURL %></td>
-            <td > 
-              <%= urls[url].userID%>
+            <td><a href="/u/<%= shortURL %>"><%= shortURL %></a></td>
+            <td><%= urls[shortURL].longURL %></td>
+            <td>
+              <form method="post" action="/urls/<%= shortURL %>/delete">
+                <button type="submit" class="btn btn-primary">DELET</button>
+              </form>
             </td>
-            <td > <form method="post" action="/urls/<%= url %>/delete">
-              <button type="submit" class="btn btn-primary">DELET</button>
-            </form>
-          </td>
-          <td > 
-            <a href="/urls/<%= url %>">UPDATE</a>
-          </td>
+            <td>
+              <a href="/urls/<%= shortURL %>">UPDATE</a>
+            </td>
+        
           </tr>
           <% } %>
-        <% } %>
+        <% } else { %>
+          <div style="display:flex; align-items:center;flex-direction:column;
+          width:100%;" method="POST" action="/register">
+            <h2>you need to register or login !</h2>
+          </div>
+
+          <% } %>
       </tbody>
     </table>
     

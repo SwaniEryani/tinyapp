@@ -18,7 +18,7 @@ app.use(cookieSession({
 
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "CDVse2" },
+  b6UTxQ: { longURL: "https://www.github.com", userID: "CDVse2" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "CDVse2" },
   b2xVn2: { longURL: "http://www.lighthouselabs.ca", userID: "Gtlov4" }
 };
@@ -35,17 +35,26 @@ const users = {
   },
   "62SyXt": {
     id: "62SyXt",
-    email: "dddddd@gggggg.com",
+    email: "aleryanisilwan@gmail.com",
     password: bcrypt.hashSync("www", 10)
 
   }
 };
-
-
-
+//________________GET /___________
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  
+  if (req.session.user_id) {
+    const userId = req.session.user_id;
+    const user = searchUser(users, userId);
+    let templateVars = { user };
+    res.redirect("urls_index", templateVars);
+  } else {
+    res.redirect('login');
+  }
+  
 });
+
+//________________GET /urls___________
 
 app.get("/urls", (req, res) => {
 
@@ -58,7 +67,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
+//________________GET /urls/new _________________________
 //______________ start newShortUrl ______________________
 app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
@@ -68,25 +77,26 @@ app.get("/urls/new", (req, res) => {
   res.status(200).render("urls_new", templateVars);// added templateVars becouse it crached the adding new featuer
 });
 
-
+//____________________POST /urls _________________________
 // create new shortURL and add it to the object urlDatabase
 app.post("/urls", (req, res) => {//when there is no input -_-
 
-  if (req.body.longURL !== '""') {
+  if (req.body.longURL) {
     if (req.session.user_id) {
       const url = req.body.longURL;
       const userId = req.session.user_id;
       const shortUrl = generateRandomString();
       createNewUrl(shortUrl, urlDatabase, url, userId);
-      res.status(200).redirect("/urls");
+      res.status(200).redirect(`/urls/${shortUrl}`);
     } else {
       res.send("<html><body><h2>Please login before adding new url</h2></body></html>");
     }
-
+  } else {
+    res.redirect('/urls/new');
   }
 });
 //______________ end newShortUrl ______________________
-
+//________________GET /register _______________________
 //______________ start registration ___________________
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
@@ -94,7 +104,7 @@ app.get("/register", (req, res) => {
   let templateVars = { user };
   res.status(200).render("register", templateVars);// added templateVars becouse it crached the adding new featuer
 });
-
+//__________________POST /register______________________
 app.post('/register', (req, res) => {
   if (req.body.email && req.body.password) {
     if (!(getUserIdbyEmail(users, req.body.email))) {
@@ -107,8 +117,9 @@ app.post('/register', (req, res) => {
           email: req.body.email,
           password: bcrypt.hashSync(req.body.password, 10)
         });
-        //users[id] = {id: id, email: req.body.email, password: req.body.password} ;
-        res.cookie('id', id);
+        const userId = getUserIdbyEmail(users, req.body.email);
+        const user = searchUser(users, userId);
+        req.session['user_id'] = user.id;
         res.redirect('/urls');
         // console.log("users with the new user >>>>", users);
       }
@@ -126,7 +137,7 @@ app.post('/register', (req, res) => {
 
 });
 //______________ End registration ____________________
-
+//______________ GET /login___________________________
 //______________ Start login _________________________
 app.get('/login', (req, res) => {
   const userId = req.session.user_id;
@@ -134,7 +145,7 @@ app.get('/login', (req, res) => {
   let templateVars = { user };
   res.render('login', templateVars);
 });
-
+//_______________ POST /login _________________________
 app.post('/login', (req, res) => {
 
   const userId = getUserIdbyEmail(users, req.body.email);
@@ -156,12 +167,14 @@ app.post('/login', (req, res) => {
 });
 //___________________End login _______________________
 //logout
+//___________________POST /logout ____________________
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
 });
 
 //Update
+//__________________POST /urls/:id ____________________
 app.post('/urls/:shortURL/update', (req, res) => {
 
   if (req.body.longURL.length > 2) {
@@ -172,30 +185,20 @@ app.post('/urls/:shortURL/update', (req, res) => {
   }
 
 });
-
+//____________POST /urls/:id/delete__________
 // Delete
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
-//for checking the users
-app.get('/users', (req, res) => {
-  res.json(users);
-});
-//for checking the users
-app.get("/urlsdb", (req, res) => {
-  res.json(urlDatabase);
-});
-//cehck the sisstion
-app.get("/session", (req, res) => {
-  res.json(req.session);
-});
-
+//_______________GET /urls/:id_________________
 app.get('/urls/:shortURL', (req, res) => {
 
   if (req.session.user_id) {
-    const temp = { userId: req.session.user_id };
+    const userId = req.session.user_id;
+  const user = searchUser(users, userId);
+  let templateVars = { user };
     if (urlDatabase[req.params.shortURL]) {
       if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
         const userId = req.session.user_id;
@@ -212,7 +215,7 @@ app.get('/urls/:shortURL', (req, res) => {
       }
 
     } else {
-      res.status(404).render('404', temp);
+      res.status(404).render('404', templateVars);
       return;
     }
 
@@ -221,7 +224,7 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 
 });
-
+//_________________________GET /u/:id_______________________
 //redirect to the longURL
 app.get("/u/:shortURL", (req, res) => {
 
@@ -238,14 +241,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-// app.get("/", (req, res) => {
-//   const userId =req.session.user_id
-//   res.redirect("urls_index", userId );
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</b></body></html>\n");
 // });
+
 
 app.get("*", (req, res) => {
   const userId = req.session.user_id;
@@ -256,6 +255,18 @@ app.get("*", (req, res) => {
 
 });
 
+// //for checking the users
+// app.get('/users', (req, res) => {
+//   res.json(users);
+// });
+// //for checking the users
+// app.get("/urlsdb", (req, res) => {
+//   res.json(urlDatabase);
+// });
+// //cehck the sisstion
+// app.get("/session", (req, res) => {
+//   res.json(req.session);
+// });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });

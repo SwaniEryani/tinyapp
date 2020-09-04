@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
   <%- include('partials/_header') %>
 </head>
+
 <body>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
@@ -23,36 +26,53 @@
         </tr>
       </thead>
       <tbody>
-       
-          <% for (let shortURL in urls) { %>
-          <tr>
-            <td><a href="/u/<%= shortURL %>"><%= shortURL %></a></td>
-            <td><%= urls[shortURL].longURL %></td>
-            <td>
-              <form method="post" action="/urls/<%= shortURL %>/delete">
-                <button type="submit" class="btn btn-primary">DELET</button>
-              </form>
-            </td>
-            <td>
-              <a href="/urls/<%= shortURL %>">UPDATE</a>
-            </td>
-        
-          </tr>
-          <% } %>
-        <% } else { %>
-          <div style="display:flex; align-items:center;flex-direction:column;
-          width:100%;" method="POST" action="/register">
-            <h2>you need to register or login !</h2>
-          </div>
 
-          <% } %>
+        <% for (let shortURL in urls) { %>
+        <tr>
+          <td><a href="/u/<%= shortURL %>"><%= shortURL %></a></td>
+          <td><%= urls[shortURL].longURL %></td>
+          <td>
+            <form method="post" action="/urls/<%= shortURL %>/delete">
+              <button type="submit" class="btn btn-primary">DELET</button>
+            </form>
+          </td>
+          <td>
+            <a href="/urls/<%= shortURL %>">UPDATE</a>
+          </td>
+
+        </tr>
+        <% } %>
+        <% } else { %>
+        <div style="display:flex; align-items:center;flex-direction:column;
+          width:100%;" method="POST" action="/register">
+          <h2>you need to register or login !</h2>
+        </div>
+        <div>
+          <form style="display:flex; align-items:center;flex-direction:column;
+        width:100%;" method="POST" action="/login">
+            <h1>Login !</h1>
+            <input style="width:50%; margin:1em; padding:0.5em; box-sizing: border-box" type="email" name="email"
+              placeholder="example@example.com">
+            <input style="width:50%; margin:1em; padding:0.5em; box-sizing: border-box" type="password" name="password"
+              placeholder="password">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+        </div>
+        <% } %>
       </tbody>
     </table>
-    
+
   </main>
   <!-- Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>
